@@ -1,6 +1,9 @@
 machine:
   services:
     - docker
-test:
+dependencies:
   override:
     - docker build -t openshiftdashboard .
+test:
+  override:
+    - docker run -it openshiftdashboard ls /openshift-dashboard
