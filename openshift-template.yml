@@ -1,0 +1,159 @@
+# This OpenShift template will build a docker image using the Dockerfile found in the git repository
+# and then deploy it
+# To use it, you need to upload the template :
+# $ oc create -f openshift-template.yml
+# And create your application, either with the web console, or the cli :
+# $ oc new-app --template=openshift-dashboard -p APPLICATION_NAME=dashboard,DASHBOARD_TITLE="My OpenShift Dashboard",ROUTE_DNS=dashboard.somedomain.com
+
+kind: Template
+apiVersion: v1
+metadata:
+  name: openshift-dashboard
+  annotations:
+    description: Build and deploy the OpenShift dashboard application.
+    tags: openshift,dashboard
+labels:
+  # list of labels that are applied to every object during the template to config transformation
+  template: openshift-dashboard
+
+parameters:
+
+- name: APPLICATION_NAME
+  description: The name of the application
+  value: dashboard
+- name: DASHBOARD_TITLE
+  description: The title of the dashboard
+  value: OpenShift Dashboard
+- name: ROUTE_DNS
+  description: The DNS to use for the route
+  value: 
+
+objects:
+
+# creates a specific service account for running the application
+# so that you can give it special rights to view other projects.
+- kind: ServiceAccount
+  apiVersion: v1
+  metadata:
+    name: dashboard
+
+# defines a wrapper on top of our newly built image
+# (this is used to trigger a deployment if the image changes = has been rebuilt)
+- kind: ImageStream
+  apiVersion: v1
+  metadata:
+    name: ${APPLICATION_NAME}
+    labels:
+      application: ${APPLICATION_NAME}
+  spec:
+    tags:
+    - name: latest
+      from:
+        kind: DockerImage
+        name: library/${APPLICATION_NAME}:latest
+
+# defines the build configuration (using the Docker strategy)
+- kind: BuildConfig
+  apiVersion: v1
+  metadata:
+    name: ${APPLICATION_NAME}
+    labels:
+      application: ${APPLICATION_NAME}
+  spec:
+    strategy:
+      type: Docker
+      dockerStrategy:
+        # the base image referenced by the Dockerfile
+        from:
+          kind: DockerImage
+          name: openshift/origin-base
+    source:
+      type: Git
+      git:
+        uri: https://github.com/vbehar/openshift-dashboard.git
+    output:
+      to:
+        kind: ImageStreamTag
+        name: ${APPLICATION_NAME}:latest
+    triggers:
+    - type: ImageChange
+
+# defines the deployment configuration
+- kind: DeploymentConfig
+  apiVersion: v1
+  metadata:
+    name: ${APPLICATION_NAME}
+    labels:
+      application: ${APPLICATION_NAME}
+  spec:
+    replicas: 1
+    selector:
+      deploymentconfig: ${APPLICATION_NAME}
+    strategy:
+      type: Rolling
+      rollingParams:
+        intervalSeconds: 1
+        timeoutSeconds: 60
+        updatePeriodSeconds: 1
+    template:
+      metadata:
+        name: ${APPLICATION_NAME}
+        labels:
+          deploymentconfig: ${APPLICATION_NAME}
+          application: ${APPLICATION_NAME}
+      spec:
+        # this is our custom service account, that might have more rights
+        serviceAccount: dashboard
+        containers:
+        - name: ${APPLICATION_NAME}
+          image: library/${APPLICATION_NAME}:latest
+          # app config through env variables
+          env:
+          - name: DASHBOARD_TITLE
+            value: ${DASHBOARD_TITLE}
+          - name: PORT
+            value: "8080"
+          - name: GO_ENV
+            value: prod # use "dev" if you want to disable caching
+          readinessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 30
+            timeoutSeconds: 10
+    triggers:
+    # causes a new deployment to be created any time the replication controller template changes
+    - type: ConfigChange
+    # causes a new deployment to be created each time a new version of the image is available
+    - type: ImageChange
+      imageChangeParams:
+        automatic: true
+        from:
+          kind: ImageStreamTag
+          name: ${APPLICATION_NAME}:latest
+        containerNames:
+        - ${APPLICATION_NAME}
+  status: {}
+
+- kind: Service
+  apiVersion: v1
+  metadata:
+    name: ${APPLICATION_NAME}
+    labels:
+      application: ${APPLICATION_NAME}
+  spec:
+    selector:
+      deploymentconfig: ${APPLICATION_NAME}
+    ports:
+    - port: 8080
+
+- kind: Route
+  apiVersion: v1
+  metadata:
+    name: ${APPLICATION_NAME}
+    labels:
+      application: ${APPLICATION_NAME}
+  spec:
+    host: ${ROUTE_DNS}
+    to:
+      kind: Service
+      name: ${APPLICATION_NAME}
