@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>{{.Title}}</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="/assets/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- MetisMenu CSS -->
+    <link href="/assets/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+
+    <!-- Timeline CSS -->
+    <link href="/assets/startbootstrap-sb-admin-2/dist/css/timeline.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="/assets/startbootstrap-sb-admin-2/dist/css/sb-admin-2.css" rel="stylesheet">
+
+    <!-- Morris Charts CSS -->
+    <link href="/assets/morrisjs/morris.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="/assets/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <!-- Application CSS -->
+    <link href="/assets/openshift-dashboard/css/openshift-dashboard.css" rel="stylesheet" type="text/css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+<body>
+
+    <div>
+        <script>var builds = {{.Builds}} || [];</script>
+        <script>var deployments = {{.ReplicationControllers}} || [];</script>
+    </div>
+
+    <div id="wrapper">
+
+        <!-- Navigation -->
+        <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">openshift-dashboard</a>
+            </div>
+            <!-- /.navbar-header -->
+        </nav>
+
+        <div id="page-wrapper">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h1 class="page-header">{{.Title}}</h1>
+                </div>
+                <!-- /.col-lg-12 -->
+            </div>
+            <!-- /.row -->
+            <div class="row">
+                <div class="col-lg-2 col-md-6">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <i class="fa fa-home fa-5x"></i>
+                                </div>
+                                <div class="col-xs-9 text-right">
+                                    <div class="huge">{{len (.Applications)}}</div>
+                                    <div>Applications</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-6">
+                    <div class="panel panel-red">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <i class="fa fa-road fa-5x"></i>
+                                </div>
+                                <div class="col-xs-9 text-right">
+                                    <div class="huge">{{len (.Routes)}}</div>
+                                    <div>Routes</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-6">
+                    <div class="panel panel-yellow">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <i class="fa fa-sitemap fa-5x"></i>
+                                </div>
+                                <div class="col-xs-9 text-right">
+                                    <div class="huge">{{len (.Services)}}</div>
+                                    <div>Services</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-6">
+                    <div class="panel panel-green">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <i class="fa fa-gears fa-5x"></i>
+                                </div>
+                                <div class="col-xs-9 text-right">
+                                    <div class="huge">{{len (.Pods)}}</div>
+                                    <div>Pods</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-6">
+                    <div class="panel panel-success">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <i class="fa fa-gear fa-5x"></i>
+                                </div>
+                                <div class="col-xs-9 text-right">
+                                    <div class="huge">{{len (.Containers)}}</div>
+                                    <div>Containers</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-6">
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <i class="fa fa-file-text-o fa-5x"></i>
+                                </div>
+                                <div class="col-xs-9 text-right">
+                                    <div class="huge">{{len (.ImageStreams)}}</div>
+                                    <div>Images</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /.row -->
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-bar-chart-o fa-fw"></i> Builds and Deployments
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <div id="builds-and-deployments-chart"></div>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-list-alt fa-fw"></i> Applications
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-hover table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Application</th>
+                                            <th>BuildConfigs</th>
+                                            <th>DeploymentConfigs</th>
+                                            <th>ImageStreams</th>
+                                            <th>Services</th>
+                                            <th>Routes</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {{range .Applications}}
+                                        <tr>
+                                            <td>{{.Name}}</td>
+                                            <td>{{len (filterByApplication $.BuildConfigs .Name)}}</td>
+                                            <td>{{len (filterByApplication $.DeploymentConfigs .Name)}}</td>
+                                            <td>{{len (filterByApplication $.ImageStreams .Name)}}</td>
+                                            <td>{{len (filterByApplication $.Services .Name)}}</td>
+                                            <td>{{len (filterByApplication $.Routes .Name)}}</td>
+                                        </tr>
+                                        {{end}}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <!-- /.table-responsive -->
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+                </div>
+                <!-- /.col-lg-8 -->
+                <div class="col-lg-4">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-bar-chart-o fa-fw"></i> Deployments Statuses
+                        </div>
+                        <div class="panel-body">
+                            <div id="deployments-statuses-chart"></div>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-bar-chart-o fa-fw"></i> Builds Statuses
+                        </div>
+                        <div class="panel-body">
+                            <div id="builds-statuses-chart"></div>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+                </div>
+                <!-- /.col-lg-4 -->
+            </div>
+            <!-- /.row -->
+        </div>
+        <!-- /#page-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+
+    <!-- jQuery -->
+    <script src="/assets/jquery/dist/jquery.min.js"></script>
+
+    <!-- Moment.js -->
+    <script src="/assets/momentjs/min/moment-with-locales.min.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="/assets/bootstrap/dist/js/bootstrap.min.js"></script>
+
+    <!-- Metis Menu Plugin JavaScript -->
+    <script src="/assets/metisMenu/dist/metisMenu.min.js"></script>
+
+    <!-- Morris Charts JavaScript -->
+    <script src="/assets/raphael/raphael-min.js"></script>
+    <script src="/assets/morrisjs/morris.min.js"></script>
+
+    <!-- Custom Theme JavaScript -->
+    <script src="/assets/startbootstrap-sb-admin-2/dist/js/sb-admin-2.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+
+            function status2color(status) {
+                if (status === "New") return "white";
+                if (status === "Pending") return "cyan";
+                if (status === "Running") return "blue";
+                if (status === "Complete") return "green";
+                if (status === "Failed") return "red";
+                if (status === "Error") return "orange";
+                if (status === "Cancelled") return "yellow";
+                return "gray";
+            }
+
+            var buildsPerDate = builds.map(function (build) {
+                return moment(build.creationTimestamp).format("YYYY-MM-DD");
+            }).reduce(function (buildsPerDate, date, index, array) {
+                if (buildsPerDate[date] === undefined) {
+                    buildsPerDate[date] = 1;
+                } else {
+                    buildsPerDate[date] += 1;
+                }
+                return buildsPerDate;
+            }, {});
+
+            var buildsPerStatus = builds.map(function (build) {
+                return build.Status.Phase;
+            }).reduce(function (buildsPerStatus, status, index, array) {
+                if (buildsPerStatus[status] === undefined) {
+                    buildsPerStatus[status] = 1;
+                } else {
+                    buildsPerStatus[status] += 1;
+                }
+                return buildsPerStatus;
+            }, {});
+
+            var deploymentsPerDate = deployments.map(function (deployment) {
+                return moment(deployment.metadata.creationTimestamp).format("YYYY-MM-DD");
+            }).reduce(function (deploymentsPerDate, date, index, array) {
+                if (deploymentsPerDate[date] === undefined) {
+                    deploymentsPerDate[date] = 1;
+                } else {
+                    deploymentsPerDate[date] += 1;
+                }
+                return deploymentsPerDate;
+            }, {});
+
+            var deploymentsPerStatus = deployments.map(function (deployment) {
+                return deployment.metadata.annotations["openshift.io/deployment.phase"];
+            }).reduce(function (deploymentsPerStatus, status, index, array) {
+                if (deploymentsPerStatus[status] === undefined) {
+                    deploymentsPerStatus[status] = 1;
+                } else {
+                    deploymentsPerStatus[status] += 1;
+                }
+                return deploymentsPerStatus;
+            }, {});
+
+            var allActiveDates = Object.keys(buildsPerDate).concat(Object.keys(deploymentsPerDate));
+            var activeDates = allActiveDates.filter(function (item, pos) {
+                return allActiveDates.indexOf(item) == pos;
+            });
+
+            Morris.Donut({
+                element: 'deployments-statuses-chart',
+                data: Object.keys(deploymentsPerStatus).map(function (status) {
+                    return {
+                        label: status,
+                        value: deploymentsPerStatus[status]
+                    };
+                }),
+                colors: Object.keys(deploymentsPerStatus).map(status2color),
+                resize: true
+            });
+            
+
+            Morris.Donut({
+                element: 'builds-statuses-chart',
+                data: Object.keys(buildsPerStatus).map(function (status) {
+                    return {
+                        label: status,
+                        value: buildsPerStatus[status]
+                    };
+                }),
+                colors: Object.keys(buildsPerStatus).map(status2color),
+                resize: true
+            });
+
+            Morris.Bar({
+                element: 'builds-and-deployments-chart',
+                data: activeDates.map(function (date) {
+                    return {
+                        date: date,
+                        builds: buildsPerDate[date],
+                        deployments: deploymentsPerDate[date]
+                    };
+                }),
+                xkey: 'date',
+                ykeys: ['builds', 'deployments'],
+                labels: ['Builds', 'Deployments'],
+                resize: true
+            });
+
+        });
+    </script>
+
+</body>
+
+</html>
