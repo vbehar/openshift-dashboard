@@ -18,6 +18,67 @@ It is a [Go](http://golang.org/) webapp that uses the OpenShift API to build a d
 
 * If the application is not running in an OpenShift Cluster, it uses the default configuration file to connect to the OpenShift API Server. So it requires that you **login with the `oc` client** before starting the application.
 
+## Running on OpenShift
+
+If you want to deploy this dashboard on an OpenShift cluster, you can use the provided [template](openshift-template.yml), that will create all the required resources:
+
+* a `dashboard` [Service Account](https://docs.openshift.org/latest/architecture/core_concepts/projects_and_users.html#users) that will be used by the running [pod](https://docs.openshift.org/latest/architecture/core_concepts/pods_and_services.html#pods)
+* a [Build Config](https://docs.openshift.org/latest/architecture/core_concepts/builds_and_image_streams.html#docker-build) that will use the [Dockerfile](Dockerfile) to build the [Docker image](https://docs.openshift.org/latest/architecture/core_concepts/containers_and_images.html#docker-images)
+* a [Deployment Config](https://docs.openshift.org/latest/architecture/core_concepts/deployments.html#deployments-and-deployment-configurations) that will deploy a simple [pod](https://docs.openshift.org/latest/architecture/core_concepts/pods_and_services.html#pods) with a single [container](https://docs.openshift.org/latest/architecture/core_concepts/containers_and_images.html#containers)
+* a [Service](https://docs.openshift.org/latest/architecture/core_concepts/pods_and_services.html#services) in front of the [pod](https://docs.openshift.org/latest/architecture/core_concepts/pods_and_services.html#pods)(s)
+* and a [Route](https://docs.openshift.org/latest/architecture/core_concepts/routes.html#overview) to expose the [service](https://docs.openshift.org/latest/architecture/core_concepts/pods_and_services.html#services) to the outside world
+
+**Using the [template](openshift-template.yml) is very easy** (and the recommended way to install the dashboard on OpenShift):
+
+* if you don't already have a project, create one
+
+  ```
+  oc new-project dashboard
+  ```
+* create a new application from the template, and override some parameters
+
+  ```
+  oc new-app -f https://raw.githubusercontent.com/vbehar/openshift-dashboard/master/openshift-template.yml -p APPLICATION_NAME=dashboard,DASHBOARD_TITLE="My OpenShift Dashboard",ROUTE_DNS=dashboard.somedomain.com
+  ```
+
+* if a build does not start, you can start one with
+
+  ```
+  oc start-build dashboard
+  ```
+
+* Wait a little for the build to finish, the following deployment to succeed, and... that's it! You can now open your browser at the configured route DNS, and you should have a nice dashboard.
+* The next step is to give more rights to your [service account](https://docs.openshift.org/latest/architecture/core_concepts/projects_and_users.html#users) so that it can see other [projects](https://docs.openshift.org/latest/architecture/core_concepts/projects_and_users.html#projects): to do that, we will add the `view` role to our `dashboard` service account for all the projects you want to display in the dashboard
+
+  ```
+  oc policy add-role-to-user view system:serviceaccount:{DASHBOARD_PROJECT}:dashboard -n {NAME_OF_THE_PROJECT_TO_DISPLAY_IN_THE_DASHBOARD}
+  ```
+
+  for example, if the dashboard application is deployed in the `dashboard` projects, and you want to show projects `project1` and `project2` in the dashboard:
+
+  ```
+  oc policy add-role-to-user view system:serviceaccount:dashboard:dashboard -n myproject1
+  oc policy add-role-to-user view system:serviceaccount:dashboard:dashboard -n myproject2
+  ```
+
+**Alternatively**, you can just use the pre-build [Docker image hosted on Docker Hub](https://hub.docker.com/r/vbehar/openshift-dashboard/):
+
+* create a new application from the `vbehar:openshift-dashboard` image
+
+  ```
+  oc new-app vbehar/openshift-dashboard
+  ```
+* expose the service through a new route
+
+  ```
+  oc expose service openshift-dashboard --hostname=dashboard.somedomain.com
+  ```
+
+Note that if you choose to deploy without the template, the [pod](https://docs.openshift.org/latest/architecture/core_concepts/pods_and_services.html#pods) will use the `default` [service account](https://docs.openshift.org/latest/architecture/core_concepts/projects_and_users.html#users), and you will need to either:
+
+* create a new [service account](https://docs.openshift.org/latest/architecture/core_concepts/projects_and_users.html#users), edit the [deployment config](https://docs.openshift.org/latest/architecture/core_concepts/deployments.html#deployments-and-deployment-configurations) to configure the [pod](https://docs.openshift.org/latest/architecture/core_concepts/pods_and_services.html#pods) to use your new [service account](https://docs.openshift.org/latest/architecture/core_concepts/projects_and_users.html#users), and redeploy
+* or give more rights to the `default` [service account](https://docs.openshift.org/latest/architecture/core_concepts/projects_and_users.html#users) (not recommended)
+
 ## Running locally
 
 If you want to run it on your laptop:
