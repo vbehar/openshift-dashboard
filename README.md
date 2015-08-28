@@ -2,6 +2,7 @@
 
 **Dashboard for visualization of multi-projects resources in OpenShift.**
 
+[![DockerHub](https://img.shields.io/badge/docker-vbehar%2Fopenshift--dashboard-008bb8.svg)](https://hub.docker.com/r/vbehar/openshift-dashboard/)
 [![GoDoc](https://godoc.org/github.com/vbehar/openshift-dashboard?status.svg)](https://godoc.org/github.com/vbehar/openshift-dashboard)
 [![Travis](https://travis-ci.org/vbehar/openshift-dashboard.svg?branch=master)](https://travis-ci.org/vbehar/openshift-dashboard)
 [![Circle CI](https://circleci.com/gh/vbehar/openshift-dashboard/tree/master.svg?style=svg)](https://circleci.com/gh/vbehar/openshift-dashboard/tree/master)
