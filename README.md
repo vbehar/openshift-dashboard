@@ -18,6 +18,34 @@ It is a [Go](http://golang.org/) webapp that uses the OpenShift API to build a d
 
 * If the application is not running in an OpenShift Cluster, it uses the default configuration file to connect to the OpenShift API Server. So it requires that you **login with the `oc` client** before starting the application.
 
+It displays a summary of the following resources:
+
+* [Routes](https://docs.openshift.org/latest/architecture/core_concepts/routes.html#overview)
+* [Services](https://docs.openshift.org/latest/architecture/core_concepts/pods_and_services.html#services)
+* [Pods](https://docs.openshift.org/latest/architecture/core_concepts/pods_and_services.html#pods)
+* [Containers](https://docs.openshift.org/latest/architecture/core_concepts/containers_and_images.html#containers)
+* [Images](https://docs.openshift.org/latest/architecture/core_concepts/builds_and_image_streams.html#image-streams)
+* [Builds](https://docs.openshift.org/latest/architecture/core_concepts/builds_and_image_streams.html#builds)
+* [Deployments](https://docs.openshift.org/latest/architecture/core_concepts/deployments.html)
+* and... **Applications**
+
+### Applications
+
+The dashboard also groups resources by **applications**. An application is just a logical wrapper for multiple resources. You can assign resources to an application by setting a label named `application` on each resource (object):
+
+  ```
+  - kind: SomeObject
+    metadata:
+      name: myobject
+      labels:
+        application: myapplication
+  ```
+
+The dashboard will then extracts all declared applications from the labels of your resources.
+
+* **Why not use [projects](https://docs.openshift.org/latest/architecture/core_concepts/projects_and_users.html#projects) to represents applications**?
+  * Because we could have multiple applications shared in a single project, or some projects which produces [builds](https://docs.openshift.org/latest/architecture/core_concepts/builds_and_image_streams.html#builds) and [images](https://docs.openshift.org/latest/architecture/core_concepts/builds_and_image_streams.html#image-streams), but are not applications.
+
 ## Running on OpenShift
 
 If you want to deploy this dashboard on an OpenShift cluster, you can use the provided [template](openshift-template.yml), that will create all the required resources:
@@ -60,6 +88,8 @@ If you want to deploy this dashboard on an OpenShift cluster, you can use the pr
   oc policy add-role-to-user view system:serviceaccount:dashboard:dashboard -n myproject1
   oc policy add-role-to-user view system:serviceaccount:dashboard:dashboard -n myproject2
   ```
+
+* The last step is to create [applications](#applications), by adding an `application` label to your objects.
 
 **Alternatively**, you can just use the pre-build [Docker image hosted on Docker Hub](https://hub.docker.com/r/vbehar/openshift-dashboard/):
 
