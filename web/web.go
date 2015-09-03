@@ -2,11 +2,14 @@
 package web
 
 import (
+	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/codegangsta/negroni"
 	"github.com/julienschmidt/httprouter"
+	"github.com/tylerb/graceful"
 )
 
 // RunHttpServer runs an HTTP server on a port defined by the PORT env var (default to 8080)
@@ -27,7 +30,8 @@ func RunHttpServer() {
 
 	n.UseHandler(router)
 
-	n.Run(":" + port)
+	log.Printf("Starting openshift-dashboard on port %v\n", port)
+	graceful.Run(":"+port, 10*time.Second, n)
 }
 
 // Getenv returns the value of the env var with the given name,
