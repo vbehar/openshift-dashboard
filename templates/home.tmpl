@@ -328,6 +328,8 @@
             var allActiveDates = Object.keys(buildsPerDate).concat(Object.keys(deploymentsPerDate));
             var activeDates = allActiveDates.filter(function (item, pos) {
                 return allActiveDates.indexOf(item) == pos;
+            }).sort(function (a, b) {
+                return a>b ? 1 : a<b ? -1 : 0;
             });
 
             Morris.Donut({
