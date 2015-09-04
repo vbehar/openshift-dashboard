@@ -20,7 +20,8 @@ func RunHttpServer() {
 	c := NewContext()
 
 	router := httprouter.New()
-	router.GET("/", c.Home)
+	router.GET("/", c.HomeHandler)
+	router.GET("/stats", c.StatsHandler)
 
 	n := negroni.New(
 		negroni.NewRecovery(),

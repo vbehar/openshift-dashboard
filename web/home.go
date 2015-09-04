@@ -27,8 +27,8 @@ func (d *Data) Title() string {
 	return "openshift-dashboard"
 }
 
-// Home answers HTTP requests by loading data for all resource types and using the "home" view
-func (c *Context) Home(w http.ResponseWriter, req *http.Request, _ httprouter.Params) {
+// HomeHandler answers HTTP requests by loading data for all resource types and using the "home" view
+func (c *Context) HomeHandler(w http.ResponseWriter, req *http.Request, _ httprouter.Params) {
 	d, err := c.ClientWrapper.LoadData(api.ResourceTypeAll...)
 	if err != nil {
 		fmt.Fprintf(w, "failed to load data: %v", err)
