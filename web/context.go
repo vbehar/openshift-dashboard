@@ -7,6 +7,7 @@ import (
 
 	"github.com/vbehar/openshift-dashboard/api"
 
+	"github.com/thoas/stats"
 	"github.com/unrolled/render"
 )
 
@@ -14,10 +15,13 @@ import (
 type Context struct {
 	ClientWrapper *api.ClientWrapper
 	Render        *render.Render
+	Stats         *stats.Stats
 }
 
 // NewContext builds a new Context instance
 func NewContext() *Context {
+	s := stats.New()
+
 	r := render.New(render.Options{
 		IsDevelopment: isDevEnv(),
 		Funcs: []template.FuncMap{{
@@ -33,6 +37,7 @@ func NewContext() *Context {
 	return &Context{
 		ClientWrapper: clientWrapper,
 		Render:        r,
+		Stats:         s,
 	}
 }
 

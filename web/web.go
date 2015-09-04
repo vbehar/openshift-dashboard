@@ -26,6 +26,7 @@ func RunHttpServer() {
 		negroni.NewRecovery(),
 		negroni.NewLogger(),
 		negroni.NewStatic(http.Dir(publicDir)),
+		c.Stats,
 	)
 
 	n.UseHandler(router)

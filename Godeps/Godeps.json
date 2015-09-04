@@ -335,6 +335,10 @@
 			"Rev": "534019bcaea096fc0f0641afa2aed1e80cbb0ccc"
 		},
 		{
+			"ImportPath": "github.com/thoas/stats",
+			"Rev": "54ed61c2b47e263ae2f01b86837b0c4bd1da28e8"
+		},
+		{
 			"ImportPath": "github.com/tylerb/graceful",
 			"Comment": "v1.2.1",
 			"Rev": "ac9ebe4f1ee151ac1eeeaef32957085cba64d508"
