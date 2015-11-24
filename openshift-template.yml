@@ -45,12 +45,6 @@ objects:
     name: ${APPLICATION_NAME}
     labels:
       application: ${APPLICATION_NAME}
-  spec:
-    tags:
-    - name: latest
-      from:
-        kind: DockerImage
-        name: library/${APPLICATION_NAME}:latest
 
 # defines the build configuration (using the Docker strategy)
 - kind: BuildConfig
@@ -106,7 +100,7 @@ objects:
         serviceAccount: dashboard
         containers:
         - name: ${APPLICATION_NAME}
-          image: library/${APPLICATION_NAME}:latest
+          image: ${APPLICATION_NAME}:latest
           # app config through env variables
           env:
           - name: DASHBOARD_TITLE
