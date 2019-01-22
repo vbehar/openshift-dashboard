@@ -67,7 +67,7 @@ If you want to deploy this dashboard on an OpenShift cluster, you can use the pr
 * create a new application from the template, and override some parameters
 
   ```
-  oc new-app -f https://raw.githubusercontent.com/vbehar/openshift-dashboard/master/openshift-template.yml -p APPLICATION_NAME=dashboard,DASHBOARD_TITLE="My OpenShift Dashboard",ROUTE_DNS=dashboard.somedomain.com
+  oc new-app -f https://raw.githubusercontent.com/vbehar/openshift-dashboard/master/openshift-template.yml -p APPLICATION_NAME=dashboard -p DASHBOARD_TITLE="My OpenShift Dashboard" -p ROUTE_DNS=dashboard.somedomain.com
   ```
 
 * if a build does not start, you can start one with
